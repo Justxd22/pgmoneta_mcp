@@ -16,6 +16,9 @@
 /// This client version is to match pgmoneta-cli
 pub const CLIENT_VERSION: &str = "0.20.0";
 
+pub const MANAGEMENT_CATEGORY_OUTCOME: &str = "Outcome";
+pub const MANAGEMENT_ARGUMENT_STATUS: &str = "Status";
+
 pub struct Command;
 pub struct Format;
 pub struct Compression;

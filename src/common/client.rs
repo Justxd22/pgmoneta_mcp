@@ -14,13 +14,11 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 use anyhow::anyhow;
-use serde_json::Value;
 use serde::Serialize;
 use super::constant::*;
 use chrono::Local;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
-use std::collections::HashMap;
 use super::security::SecurityUtil;
 use super::configuration::CONFIG;
 
@@ -62,7 +60,7 @@ struct InfoRequest {
 pub struct PgmonetaClient;
 
 impl PgmonetaClient {
-    pub async fn request_backup_info(username: &str, server: &str, backup: &str) -> anyhow::Result<HashMap<String, Value>> {
+    pub async fn request_backup_info(username: &str, server: &str, backup: &str) -> anyhow::Result<String> {
         let info_request = InfoRequest {
             server: server.to_string(),
             backup: backup.to_string(),
@@ -79,8 +77,7 @@ impl PgmonetaClient {
         let mut response_str = String::new();
         stream.read_to_string(&mut response_str).await?;
 
-        let response: HashMap<String, Value> = serde_json::from_str(&response_str)?;
-        Ok(response)
+        Ok(response_str)
     }
 }
 
