@@ -227,17 +227,13 @@ impl SecurityUtil {
                 server_first
             ));
         }
-        let server_final_str = String::from_utf8(Vec::from(&server_final[Self::HEADER_OFFSET..n]))?;
+        let size_slice: &[u8] = &server_final[1..1+4];
+        let size = u32::from_be_bytes(size_slice.try_into().unwrap()) + 1;
+        let server_final_str = String::from_utf8(Vec::from(&server_final[Self::HEADER_OFFSET..size as usize]))?;
         scram.handle_server_final(&server_final_str)?;
 
         let mut auth_success = [0u8; 256];
-        let n = stream.read(&mut auth_success).await?;
-        if n == 0 || auth_success[0] != b'R' {
-            return Err(anyhow!(
-                "Getting invalid auth success message {:?}",
-                auth_success
-            ));
-        }
+        let _ = stream.read(&mut auth_success).await?;
         Ok(stream)
     }
 
