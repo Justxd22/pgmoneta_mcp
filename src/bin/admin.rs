@@ -39,9 +39,6 @@ enum Commands {
         /// The admin user
         #[arg(short = 'U', long)]
         user: String,
-        /// The admin user password
-        #[arg(short = 'P', long)]
-        password: String,
         /// The user configuration file
         #[arg(short = 'f', long)]
         file: String,
@@ -53,7 +50,11 @@ enum Commands {
 enum UserAction {
     /// Add a new user to configuration file, the file will be automatically created if not exist.
     /// If the user exists, new password will be set to the existing user.
-    Add {},
+    Add {
+        /// The admin user password
+        #[arg(short = 'P', long)]
+        password: String,
+    },
 }
 fn main() -> Result<()> {
     let args = Args::parse();
@@ -62,9 +63,8 @@ fn main() -> Result<()> {
             action,
             user,
             file,
-            password,
         } => match action {
-            UserAction::Add {} => User::set_user(&file, &user, &password)?,
+            UserAction::Add {password} => User::set_user(&file, &user, &password)?,
         },
         Commands::MasterKey => {
             MasterKey::set_master_key()?;
