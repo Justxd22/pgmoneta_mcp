@@ -117,7 +117,8 @@ impl ManagementError {
     pub const MANAGEMENT_ERROR_BACKUP_NETWORK: u32 = 109;
     pub const MANAGEMENT_ERROR_BACKUP_OFFLINE: u32 = 110;
     pub const MANAGEMENT_ERROR_BACKUP_NOSERVER: u32 = 111;
-    pub const MANAGEMENT_ERROR_BACKUP_ERROR: u32 = 112;
+    pub const MANAGEMENT_ERROR_BACKUP_NOFORK: u32 = 112;
+    pub const MANAGEMENT_ERROR_BACKUP_ERROR: u32 = 113;
 
     pub const MANAGEMENT_ERROR_INCREMENTAL_BACKUP_SETUP: u32 = 200;
     pub const MANAGEMENT_ERROR_INCREMENTAL_BACKUP_EXECUTE: u32 = 201;
@@ -298,6 +299,7 @@ impl ManagementError {
             Self::MANAGEMENT_ERROR_BACKUP_NETWORK => "Backup: network error",
             Self::MANAGEMENT_ERROR_BACKUP_OFFLINE => "Backup: server offline",
             Self::MANAGEMENT_ERROR_BACKUP_NOSERVER => "Backup: server not found",
+            Self::MANAGEMENT_ERROR_BACKUP_NOFORK => "Backup: no fork",
             Self::MANAGEMENT_ERROR_BACKUP_ERROR => "Backup: error",
 
             Self::MANAGEMENT_ERROR_INCREMENTAL_BACKUP_SETUP => "Incremental backup: setup failed",
