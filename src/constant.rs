@@ -336,7 +336,9 @@ impl ManagementError {
             Self::MANAGEMENT_ERROR_DELETE_BACKUP_SETUP => "Delete backup: setup failed",
             Self::MANAGEMENT_ERROR_DELETE_BACKUP_EXECUTE => "Delete backup: execution failed",
             Self::MANAGEMENT_ERROR_DELETE_BACKUP_TEARDOWN => "Delete backup: teardown failed",
-            Self::MANAGEMENT_ERROR_DELETE_BACKUP_ACTIVE => "Delete: another active process happening",
+            Self::MANAGEMENT_ERROR_DELETE_BACKUP_ACTIVE => {
+                "Delete: another active process happening"
+            }
             Self::MANAGEMENT_ERROR_DELETE_BACKUP_NOBACKUPS => "Delete backup: no backups available",
             Self::MANAGEMENT_ERROR_DELETE_BACKUP_NOBACKUP => "Delete backup: backup not found",
             Self::MANAGEMENT_ERROR_DELETE_BACKUP_RETAINED => "Delete backup: backup is retained",
