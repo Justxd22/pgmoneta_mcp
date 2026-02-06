@@ -50,6 +50,8 @@ pub struct PgmonetaMcpConfiguration {
     pub log_line_prefix: String,
     #[serde(default = "default_log_mode")]
     pub log_mode: String,
+    #[serde(default = "default_log_rotation_age")]
+    pub log_rotation_age: String,
 }
 
 pub fn load_configuration(config_path: &str, user_path: &str) -> anyhow::Result<Configuration> {
@@ -102,4 +104,8 @@ fn default_log_line_prefix() -> String {
 
 fn default_log_mode() -> String {
     "append".to_string()
+}
+
+fn default_log_rotation_age() -> String {
+    "0".to_string()
 }

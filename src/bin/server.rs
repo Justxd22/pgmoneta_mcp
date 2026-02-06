@@ -58,6 +58,7 @@ async fn main() -> anyhow::Result<()> {
         config.pgmoneta_mcp.log_line_prefix.as_str(),
         config.pgmoneta_mcp.log_path.as_str(),
         config.pgmoneta_mcp.log_mode.as_str(),
+        config.pgmoneta_mcp.log_rotation_age.as_str(),
     );
 
     let handler = StreamableHttpService::new(

@@ -20,7 +20,8 @@ use std::fs::OpenOptions;
 use syslog_tracing::Syslog;
 use tracing::level_filters::LevelFilter;
 use tracing_appender::non_blocking::WorkerGuard;
-use tracing_appender::rolling;
+use tracing_appender::rolling::RollingFileAppender;
+use tracing_appender::rolling::Rotation;
 use tracing_subscriber::filter::Targets;
 use tracing_subscriber::fmt::time::ChronoUtc;
 use tracing_subscriber::fmt::writer::BoxMakeWriter;
@@ -37,14 +38,16 @@ impl Logger {
         log_format: &str,
         log_path: &str,
         log_mode: &str,
+        log_rotation_age: &str,
     ) -> Option<WorkerGuard> {
-        let (writer, guard) = Self::make_writer(log_type, log_path, log_mode).unwrap_or_else(|e| {
-            eprintln!(
-                "Failed to initialize logging: {:?} \nDefault logging to stderr",
-                e
-            );
-            (BoxMakeWriter::new(std::io::stderr), None)
-        });
+        let (writer, guard) = Self::make_writer(log_type, log_path, log_mode, log_rotation_age)
+            .unwrap_or_else(|e| {
+                eprintln!(
+                    "Failed to initialize logging: {:?} \nDefault logging to stderr",
+                    e
+                );
+                (BoxMakeWriter::new(std::io::stderr), None)
+            });
         let level = Self::get_level(log_level);
         let targets = Targets::new()
             .with_target("pgmoneta_mcp", level)
@@ -79,6 +82,7 @@ impl Logger {
         log_type: &str,
         log_path: &str,
         log_mode: &str,
+        log_rotation_age: &str,
     ) -> anyhow::Result<(BoxMakeWriter, Option<WorkerGuard>)> {
         match log_type {
             LogType::CONSOLE => Ok((BoxMakeWriter::new(std::io::stderr), None)),
@@ -95,7 +99,8 @@ impl Logger {
                     Ok((BoxMakeWriter::new(writer), Some(_guard)))
                 }
                 LogMode::APPEND => {
-                    let file_appender = rolling::never(".", log_path);
+                    let rotation = Self::map_log_rotation_age(log_rotation_age)?;
+                    let file_appender = RollingFileAppender::new(rotation, ".", log_path);
                     let (writer, _guard) = tracing_appender::non_blocking(file_appender);
                     Ok((BoxMakeWriter::new(writer), Some(_guard)))
                 }
@@ -108,6 +113,28 @@ impl Logger {
                 Ok((BoxMakeWriter::new(syslog), None))
             }
             _ => Err(anyhow::anyhow!("Invalid log type: {}", log_type)),
+        }
+    }
+
+    fn map_log_rotation_age(log_rotation_age: &str) -> anyhow::Result<Rotation> {
+        let error_msg = format!("Invalid log rotation age: {}", log_rotation_age);
+        if log_rotation_age.len() != 1 {
+            Err(anyhow::anyhow!(error_msg))
+        } else {
+            let c = log_rotation_age.chars().next().unwrap();
+            if c == 'm' || c == 'M' {
+                Ok(Rotation::MINUTELY)
+            } else if c == 'h' || c == 'H' {
+                Ok(Rotation::HOURLY)
+            } else if c == 'd' || c == 'D' {
+                Ok(Rotation::DAILY)
+            } else if c == 'w' || c == 'W' {
+                Ok(Rotation::WEEKLY)
+            } else if c == '0' {
+                Ok(Rotation::NEVER)
+            } else {
+                Err(anyhow::anyhow!(error_msg))
+            }
         }
     }
 }
