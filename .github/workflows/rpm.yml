@@ -21,8 +21,10 @@ jobs:
 
       - name: Build RPM
         run: |
+          VERSION=$(grep '^version =' Cargo.toml | head -n 1 | cut -d '"' -f 2)
+          echo "Building version $VERSION"
           mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
-          tar --exclude=rpmbuild --transform 's|^|pgmoneta-mcp-0.2.0/|' -czf rpmbuild/SOURCES/v0.2.0.tar.gz .
+          tar --exclude=rpmbuild --transform "s|^|pgmoneta-mcp-$VERSION/|" -czf rpmbuild/SOURCES/v$VERSION.tar.gz .
           rpmbuild --define "_topdir $(pwd)/rpmbuild" \
             --define "_unitdir /usr/lib/systemd/system" \
             --define "_bindir /usr/bin" \
