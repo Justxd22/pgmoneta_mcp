@@ -1,0 +1,13 @@
+[Unit]
+Description=pgmoneta MCP server
+After=network.target
+
+[Service]
+Type=simple
+User=pgmoneta
+Group=pgmoneta
+ExecStart=/usr/bin/pgmoneta-mcp-server -c /etc/pgmoneta-mcp/pgmoneta-mcp.conf -u /etc/pgmoneta-mcp/pgmoneta-mcp-users.conf
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
