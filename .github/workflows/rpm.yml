@@ -1,0 +1,36 @@
+name: RPM Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-rpm:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+      - name: Install git
+        run: dnf install -y git
+
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: dnf install -y rust cargo rpm-build systemd-rpm-macros
+
+      - name: Build RPM
+        run: |
+          mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+          tar --exclude=rpmbuild --transform 's|^|pgmoneta-mcp-0.2.0/|' -czf rpmbuild/SOURCES/v0.2.0.tar.gz .
+          rpmbuild --define "_topdir $(pwd)/rpmbuild" \
+            --define "_unitdir /usr/lib/systemd/system" \
+            --define "_bindir /usr/bin" \
+            --define "_sysconfdir /etc" \
+            -bb rpm/pgmoneta-mcp.spec
+
+      - name: Archive RPM
+        uses: actions/upload-artifact@v4
+        with:
+          name: pgmoneta-mcp-rpm
+          path: rpmbuild/RPMS/x86_64/*.rpm
