@@ -1,3 +1,6 @@
 /target
 .vscode/
 .idea/
+**/master.key
+**/default.profraw
+rpmbuild/
